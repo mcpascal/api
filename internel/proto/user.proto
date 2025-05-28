@@ -1,0 +1,60 @@
+syntax = "proto3";
+option go_package = ".;proto";
+
+service User {
+    rpc GetUserList(PageInfoRequest) returns (UserListResponse);
+    rpc GetUserById(UserIdRequest) returns (UserResponse);
+    rpc CreateUser(UserRequest) returns (UserResponse);
+    rpc UpdateUser(UserRequest) returns (UserResponse);
+    rpc DeleteUser(UserId) returns (UserResponse);
+}
+
+message PageInfoRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+message UserListResponse {
+    repeated UserInfo users = 1;
+    int32 total = 2;
+}
+
+message UserInfo {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    string phone = 4;
+    string address = 5;
+}
+
+message UserIdRequest {
+    int32 id = 1;
+}
+message UserId {
+    int32 id = 1;
+}
+message UserRequest {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    string phone = 4;
+    string address = 5;
+}
+message UserResponse {
+    UserInfo user = 1;
+    string message = 2;
+}
+message ErrorResponse {
+    string error = 1;
+}
+message EmptyResponse {
+    // This message is used for operations that do not return any data.
+}
+message StatusResponse {
+    bool success = 1;
+    string message = 2;
+}
+message UserListRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
