@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"api/internal/controllers"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -17,7 +18,7 @@ func RegisterRouter(r *gin.Engine) {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	r.GET("/ping", pong)
+	r.Any("/ping", pong)
 	api(r)
 }
 
@@ -25,7 +26,7 @@ func api(r *gin.Engine) {
 	api := r.Group("/api")
 	{
 		v1 := api.Group("/v1")
-		authWithoutAuth(v1)
+		auth(v1)
 		// v1 := api.Group("/v1")
 		// authWithoutAuth(v1)
 		// v1.Use(middlewares.Auth())
@@ -45,7 +46,10 @@ func authWithoutAuth(r *gin.RouterGroup) {
 }
 
 func auth(r *gin.RouterGroup) {
-
+	c := controllers.NewAuth()
+	{
+		r.POST("/login", c.Login)
+	}
 }
 
 // func WarpH[I any, O any](fn func(*gin.Context, *I) (O, error)) gin.HandlerFunc {

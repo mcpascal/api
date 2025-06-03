@@ -22,7 +22,7 @@ func Auth() gin.HandlerFunc {
 			token = strings.TrimSpace(strings.Replace(token, "Bearer", "", -1))
 		}
 		// 解析token
-		j := NewJWT()
+		j := NewJwt()
 		claims, err := j.ParseToken(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -34,7 +34,7 @@ func Auth() gin.HandlerFunc {
 		}
 
 		// 将claims放入上下文
-		c.Set("claims", claims)
+		c.Set("claim", claims)
 		c.Next()
 	}
 }

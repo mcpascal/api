@@ -2,16 +2,17 @@ package middlewares
 
 import (
 	"api/configs"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 // CustomClaims 自定义Claims
-type CustomClaims struct {
-	ID       uint   `json:"id"`
-	Username string `json:"username"`
-	jwt.RegisteredClaims
-}
+// type CustomClaims struct {
+// 	ID       uint   `json:"id"`
+// 	Username string `json:"username"`
+// 	jwt.RegisteredClaims
+// }
 
 type JWT struct {
 	SigningKey []byte
@@ -26,7 +27,7 @@ var (
 )
 
 // NewJWT 新建JWT实例
-func NewJWT() *JWT {
+func NewJwt() *JWT {
 	return &JWT{
 		SigningKey: []byte(configs.App.JwtInfo.Secret), // 设置签名密钥
 	}
@@ -50,4 +51,29 @@ func (j *JWT) ParseToken(tokenString string) (*CustomClaims, error) {
 	} else {
 		return nil, jwt.ErrTokenInvalidClaims
 	}
+}
+
+// 在 CustomClaims 中添加刷新令牌的字段
+type CustomClaims struct {
+	ID        uint   `json:"id"`
+	Username  string `json:"username"`
+	TokenType string `json:"token_type"` // access 或 refresh
+	jwt.RegisteredClaims
+}
+
+// 创建访问令牌和刷新令牌
+func (j *JWT) CreateTokenPair(claims CustomClaims) (accessToken, refreshToken string, err error) {
+	// 访问令牌 - 短期有效
+	claims.TokenType = "access"
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Hour * 2))
+	accessToken, err = j.CreateToken(claims)
+	if err != nil {
+		return "", "", err
+	}
+
+	// 刷新令牌 - 长期有效
+	claims.TokenType = "refresh"
+	claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7))
+	refreshToken, err = j.CreateToken(claims)
+	return
 }
