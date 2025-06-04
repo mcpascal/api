@@ -30,6 +30,14 @@ func Setup() {
 	}
 }
 
+func Close() {
+	if client != nil {
+		if err := client.Close(); err != nil {
+			panic("Redis关闭失败: " + err.Error())
+		}
+	}
+}
+
 func GetClient() *redis.Client {
 	if client == nil {
 		panic("Redis client is not initialized")

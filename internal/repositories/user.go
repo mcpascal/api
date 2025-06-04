@@ -16,11 +16,11 @@ func NewUser() *User {
 }
 
 func (u *User) FindByEmail(email string) (models.User, error) {
-	var data models.User
-	if err := mysql.Database.Where("email = ?", email).First(data).Error; err != nil {
-		return models.User{}, err
+	user := models.User{}
+	if err := mysql.Database.Where("email = ?", email).First(&user).Error; err != nil {
+		return user, err
 	}
-	return data, nil
+	return user, nil
 }
 
 // func (u *User) Create(user *models.User) (models.User, error) {

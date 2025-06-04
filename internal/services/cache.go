@@ -5,3 +5,10 @@ type ICache interface {
 	Set(key string, value string) error
 	Del(key string) error
 }
+
+type Cache struct {
+}
+
+func NewCache() *ICache {
+	return nil
+}

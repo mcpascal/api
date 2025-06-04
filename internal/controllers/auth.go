@@ -4,11 +4,13 @@ import (
 	"api/internal/requests"
 	"api/internal/responses"
 	"api/internal/services"
+	"api/pkg/validator"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Auth struct {
+	Controller
 	service *services.Auth
 }
 
@@ -19,19 +21,68 @@ func NewAuth() *Auth {
 }
 
 func (a *Auth) Login(c *gin.Context) {
-	var req *requests.Login
+	req := &requests.Login{}
 	if err := c.ShouldBind(req); err != nil {
+		validator.HandleValidatorError(c, err)
 		return
 	}
-	token, refreshToken, err := a.service.Login(c, req)
+	resp, err := a.service.Login(c, req)
 	if err != nil {
 		return
 	}
-	resp := &responses.Login{
-		Token:        token,
-		RefreshToken: refreshToken,
-	}
 	responses.Success(c, "login success", resp)
+}
+
+func (a *Auth) Register(c *gin.Context) {
+	req := &requests.Register{}
+	if err := c.ShouldBind(req); err != nil {
+		validator.HandleValidatorError(c, err)
+		return
+	}
+	resp, err := a.service.Register(c, req)
+	if err != nil {
+		return
+	}
+	responses.Success(c, "register success", resp)
+
+}
+
+func (a *Auth) Logout(c *gin.Context) {
+}
+
+func (a *Auth) Refresh(c *gin.Context) {
+
+}
+
+func (a *Auth) ResetPassword(c *gin.Context) {
+
+}
+
+func (a *Auth) SendResetPasswordEmail(c *gin.Context) {
+
+}
+
+func (a *Auth) SendVerifyEmail(c *gin.Context) {
+
+}
+
+func (a *Auth) VerifyEmail(c *gin.Context) {
+
+}
+
+func (a *Auth) SendVerifyPhone(c *gin.Context) {
+}
+
+func (a *Auth) VerifyPhone(c *gin.Context) {
+
+}
+
+func (a *Auth) SendVerifyPhoneCode(c *gin.Context) {
+
+}
+
+func (a *Auth) ForgetPassword(c *gin.Context) {
+
 }
 
 // func (a *Auth) Register(c *gin.Context) {

@@ -27,3 +27,6 @@ func Setup() {
 	Database = db
 	models.InitializeTables(Database)
 }
+
+func Close() {
+}

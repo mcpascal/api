@@ -90,11 +90,12 @@ func (app *application) Start() {
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server Shutdown:", err)
 	}
-
-	log.Println("Server exiting")
 }
 
 func (app *application) Stop() {
+	logger.Close()
+	mysql.Close()
+	redis.Close()
 }
 
 func (app *application) Setup(env string) {

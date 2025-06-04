@@ -3,6 +3,7 @@ package services
 import (
 	"api/internal/repositories"
 	"api/internal/requests"
+	"api/internal/responses"
 	"fmt"
 	"time"
 
@@ -15,49 +16,53 @@ var (
 )
 
 type Auth struct {
-	r repositories.User
+	repository *repositories.Auth
 }
 
 func NewAuth() *Auth {
-	return &Auth{}
+	return &Auth{
+		repository: repositories.NewAuth(),
+	}
 }
 
-func (a *Auth) Login(c *gin.Context, req *requests.Login) (string, string, error) {
+func (a *Auth) Login(c *gin.Context, req *requests.Login) (*responses.Login, error) {
 	var err error
-	// // check captcha
-	// err = a.VarifyCaptcha(c, req.Captcha)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// // check login attempt fail times
-	// ip := c.ClientIP()
-	// err = a.CheckLoginAttempts(ip, string(user.ID))
-	// if err != nil {
-	// 	return "", err
-	// }
+	resp := &responses.Login{}
+	// check captcha
+	err = a.VarifyCaptcha(c, req.Captcha)
+	if err != nil {
+		return nil, err
+	}
+	// check login attempt fail times
+	ip := c.ClientIP()
+	err = a.CheckLoginAttempts(ip)
+	if err != nil {
+		return nil, err
+	}
 	// check user exist
-	user, err := a.r.FindByEmail(req.Email)
+	userRepo := repositories.NewUser()
+	user, err := userRepo.FindByEmail(req.Email)
 	fmt.Println(user)
 	if err != nil {
-		return "", "", err
+		return resp, err
 	}
-	return "", "", nil
 	// check password
-	// err = a.VarifyPassword(req.Password, user.Password)
-	// if err != nil {
-	// 	return "", "", err
-	// }
+	err = a.VarifyPassword(req.Password, user.Password)
+	if err != nil {
+		return nil, err
+	}
 
-	// // generate token
+	// generate token
 	// jwt := utils.NewJwt()
 	// return jwt.GenerateToken(utils.CustomClaims{
 	// 	Id:       uint(user.ID),
 	// 	Username: user.Username,
 	// 	Email:    user.Email,
 	// })
+	return resp, nil
 }
 
-func (a *Auth) CheckLoginAttempts(ip string, user string) error {
+func (a *Auth) CheckLoginAttempts(ip string) error {
 	// count, ok := loginCache.Get(ip)
 	//
 	//	if ok && count >= defaultTimes {
@@ -67,24 +72,26 @@ func (a *Auth) CheckLoginAttempts(ip string, user string) error {
 	return nil
 }
 
-// func (a *Auth) Register(c *gin.Context, req *requests.Register) error {
-// 	user := &models.User{
-// 		Email: req.Email,
-// 	}
-// 	user, err := a.r.FindOneByEmail(req.Email)
-// 	if user.ID != 0 {
-// 		return errors.New("email already exists")
-// 	}
-// 	// hash password
-// 	hash, err := a.r.HashPassword(req.Password)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	// create user
-// 	user.Password = hash
-// 	_, err = a.r.Create(&user)
-// 	return err
-// }
+func (a *Auth) Register(c *gin.Context, req *requests.Register) (responses.Register, error) {
+	resp := responses.Register{}
+	// user := &models.User{
+	// 	Email: req.Email,
+	// }
+	// user, err := a.r.FindOneByEmail(req.Email)
+	// if user.ID != 0 {
+	// 	return errors.New("email already exists")
+	// }
+	// // hash password
+	// hash, err := a.r.HashPassword(req.Password)
+	// if err != nil {
+	// 	return err
+	// }
+	// // create user
+	// user.Password = hash
+	// _, err = a.r.Create(&user)
+	// return err
+	return resp, nil
+}
 
 // ip := c.ClientIP()
 // 	count, ok := loginCache.Get(ip)
@@ -93,26 +100,26 @@ func (a *Auth) CheckLoginAttempts(ip string, user string) error {
 // 		loginCache.Expire(ip, defaultDuration)
 // 		return
 
-// func (a *Auth) VarifyCaptcha(c *gin.Context, captcha string) error {
-// 	// 从缓存中获取验证码
-// 	key := fmt.Sprintf("captcha:%s", c.ClientIP())
-// 	savedCaptcha, err := cache.Get(key)
-// 	if err != nil {
-// 		return errors.New("验证码已过期")
-// 	}
+func (a *Auth) VarifyCaptcha(c *gin.Context, captcha string) error {
+	// 从缓存中获取验证码
+	// key := fmt.Sprintf("captcha:%s", c.ClientIP())
+	// savedCaptcha, err := cache.Get(key)
+	// if err != nil {
+	// 	return errors.New("验证码已过期")
+	// }
 
-// 	if !strings.EqualFold(savedCaptcha, captcha) {
-// 		return errors.New("验证码错误")
-// 	}
+	// if !strings.EqualFold(savedCaptcha, captcha) {
+	// 	return errors.New("验证码错误")
+	// }
 
-// 	// 验证成功后删除验证码
-// 	cache.Del(key)
-// 	return nil
-// }
+	// // 验证成功后删除验证码
+	// // cache.Del(key)
+	return nil
+}
 
-// func (a *Auth) VarifyPassword(password, hashedPassword string) error {
-// 	return nil
-// }
+func (a *Auth) VarifyPassword(password, hashedPassword string) error {
+	return nil
+}
 
 // func (a *Auth) GenerateToken(user models.User) (string, error) {
 // 	return "", nil

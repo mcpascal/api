@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"api/pkg/jwt"
 	"net/http"
 	"strings"
 
@@ -22,8 +23,8 @@ func Auth() gin.HandlerFunc {
 			token = strings.TrimSpace(strings.Replace(token, "Bearer", "", -1))
 		}
 		// 解析token
-		j := NewJwt()
-		claims, err := j.ParseToken(token)
+		j := jwt.NewJwt()
+		claims, err := j.Parse(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": 401,

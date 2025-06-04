@@ -2,22 +2,13 @@ package routers
 
 import (
 	"api/internal/controllers"
-	"time"
+	"api/internal/middlewares"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRouter(r *gin.Engine) {
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // 只允许特定域名
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
-
+	r.Use(middlewares.Cors())
 	r.Any("/ping", pong)
 	api(r)
 }
@@ -39,16 +30,25 @@ func api(r *gin.Engine) {
 	}
 }
 
-func authWithoutAuth(r *gin.RouterGroup) {
-	// c := controllers.NewAuth()
-	// r.POST("/login", c.Login)
-	// r.POST("/register", c.Register)
-}
+// func authWithoutAuth(r *gin.RouterGroup) {
+// 	// c := controllers.NewAuth()
+// 	// r.POST("/login", c.Login)
+// 	// r.POST("/register", c.Register)
+// }
 
 func auth(r *gin.RouterGroup) {
 	c := controllers.NewAuth()
+	g := r.Group("/auth")
 	{
-		r.POST("/login", c.Login)
+		g.POST("/login", c.Login)
+		// g.POST("/register", c.Register)
+		// g.POST("/forget_password", c.ForgetPassword)
+		// g.Use(middlewares.Auth())
+		// {
+		// 	g.POST("/logout", c.Logout)
+		// 	g.GET("/refresh", c.Refresh)
+		// 	g.POST("/reset_password", c.ResetPassword)
+		// }
 	}
 }
 

@@ -14,6 +14,10 @@ var (
 	Logger *zap.SugaredLogger
 )
 
+func Close() {
+	Logger.Sync()
+}
+
 func Setup() {
 	config := configs.App.LoggerInfo
 

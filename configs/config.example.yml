@@ -8,14 +8,14 @@ mysql:
   host: '127.0.0.1'
   password: 'youthank@2025'
   port: 3306
-  db: 'youthank'
+  database: 'youthank'
   charset: 'utf8'
 
 redis:
   host: '127.0.0.1'
   password: 'youthank@2025'
   port: 6379
-  db: 0
+  database: 0
 
 logger:
   path: 'logs'
@@ -32,7 +32,7 @@ etcd:
 mongo:
   host: ''
   port: '27017'
-  db: ''
+  database: ''
   username: ''
   password: ''
 
@@ -45,3 +45,23 @@ mq:
 
 jwt:
   secret: ''
+  expire: 600
+sms:
+  app_id: ''
+  app_key: ''
+  sign_name: ''
+  template_code: ''
+oss:
+  access_key_id: ''
+  access_key_secret: ''
+  bucket: ''
+  endpoint: ''
+  domain: ''
+  path: ''
+oss_ali:
+  access_key_id: ''
+  access_key_secret: ''
+  bucket: ''
+  endpoint: ''
+  domain: ''
+  path: ''  
