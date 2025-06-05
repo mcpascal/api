@@ -17,7 +17,13 @@ func api(r *gin.Engine) {
 	api := r.Group("/api")
 	{
 		v1 := api.Group("/v1")
+		captcha(v1)
+		sms(v1)
 		auth(v1)
+		// v1.Use(middlewares.Auth())
+		{
+			user(v1)
+		}
 		// v1 := api.Group("/v1")
 		// authWithoutAuth(v1)
 		// v1.Use(middlewares.Auth())
@@ -27,6 +33,25 @@ func api(r *gin.Engine) {
 		// 	// user(v1)
 		// 	journals(v1)
 		// }
+	}
+}
+
+func captcha(r *gin.RouterGroup) {
+	c := controllers.NewCaptcha()
+	g := r.Group("/captchas")
+	{
+		g.GET("/", c.Generate)
+		g.POST("/verify/:id", c.Verify)
+	}
+
+}
+
+func sms(r *gin.RouterGroup) {
+	c := controllers.NewSms()
+	g := r.Group("/sms")
+	{
+		g.POST("/send", c.Generate)
+		g.POST("/verify", c.Verify)
 	}
 }
 
@@ -106,18 +131,18 @@ func auth(r *gin.RouterGroup) {
 // 	}
 // }
 
-// func user(r *gin.RouterGroup) {
-// 	c := controllers.NewUser()
-// 	u := r.Group("/users")
-// 	{
-// 		u.GET("/", c.Index)
-// 		u.GET("/:id", c.Show)
-// 		u.POST("/", c.Store)
-// 		u.PUT("/:id", c.Update)
-// 		u.DELETE("/:id", c.Destroy)
-// 		// u.GET("test/:id", WarpH(c.GetUser))
-// 	}
-// }
+func user(r *gin.RouterGroup) {
+	c := controllers.NewUser()
+	u := r.Group("/users")
+	{
+		u.GET("/", c.Index)
+		u.GET("/:id", c.Show)
+		u.POST("/", c.Store)
+		u.PUT("/:id", c.Update)
+		u.DELETE("/:id", c.Destroy)
+		// u.GET("test/:id", WarpH(c.GetUser))
+	}
+}
 
 // func journals(r *gin.RouterGroup) {
 // 	c := controllers.NewJournal()
