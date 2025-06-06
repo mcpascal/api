@@ -2,9 +2,14 @@ package controllers
 
 import (
 	"api/internal/responses"
+	validate "api/pkg/validator"
+	"errors"
+	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type IController interface {
@@ -18,11 +23,33 @@ type IController interface {
 type Controller struct {
 }
 
-func (c *Controller) CheckParams(ctx *gin.Context, req interface{}) {
-	if err := ctx.ShouldBind(&req); err != nil {
-		responses.Fail(ctx, 400, "params error", err)
+// HandleValidatorError 处理字段校验异常
+func (c *Controller) HandleValidatorError(ctx *gin.Context, err error) {
+	//如果返回错误信息
+	errs, ok := err.(validator.ValidationErrors)
+	if !ok {
+		responses.Fail(ctx, http.StatusBadRequest, err.Error(), err)
 		return
 	}
+	errMap := c.removeTopStruct(errs.Translate(validate.Trans))
+	var errstr string
+	for k, v := range errMap {
+		if len(errstr) > 0 {
+			errstr += ";"
+		}
+		errstr += k + ":" + v
+	}
+	responses.Fail(ctx, http.StatusBadRequest, errstr, errors.New(errstr))
+	return
+}
+
+// removeTopStruct 定义一个去掉结构体名称前缀的自定义方法：
+func (c *Controller) removeTopStruct(fileds map[string]string) map[string]string {
+	rsp := map[string]string{}
+	for field, err := range fileds {
+		rsp[field[strings.Index(field, ".")+1:]] = err
+	}
+	return rsp
 }
 
 func (c *Controller) GetParamId(ctx *gin.Context) int {

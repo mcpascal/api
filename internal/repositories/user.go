@@ -3,6 +3,7 @@ package repositories
 import (
 	"api/internal/models"
 	"api/pkg/mysql"
+	"fmt"
 )
 
 type User struct {
@@ -54,6 +55,28 @@ func (u *User) FindByPaginator(page int, limit int) (int64, []models.User, error
 		return total, users, err
 	}
 	if err := mysql.Database.Offset(offset).Limit(limit).Find(&users).Error; err != nil {
+		return 0, users, err
+	}
+	return total, users, nil
+}
+
+func (u *User) Search(page int, limit int, conditions []interface{}, orders []interface{}) (int64, []models.User, error) {
+	var total int64
+	users := []models.User{}
+	offset := (page - 1) * limit
+	query := mysql.Database.Offset(offset).Limit(limit)
+	for _, condition := range conditions {
+		fmt.Println(condition)
+		// query = query.Where(condition[0], condition[1], condition[2])
+	}
+	for _, order := range orders {
+		fmt.Println(order)
+		// query = query.Order(order[0], order[1])
+	}
+	if err := query.Find(&users).Count(&total).Error; err != nil {
+		return total, users, err
+	}
+	if err := query.Find(&users).Error; err != nil {
 		return 0, users, err
 	}
 	return total, users, nil

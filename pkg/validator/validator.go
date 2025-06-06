@@ -55,10 +55,8 @@ func Setup(locale string) (err error) {
 
 		// 注册自定义验证规则
 		registerValidatorFunc(v, "mobile", "非法手机号", ValidateMobile)
-
-		return
 	}
-	return
+	return nil
 }
 
 // HandleValidatorError 处理字段校验异常
@@ -66,7 +64,7 @@ func HandleValidatorError(c *gin.Context, err error) {
 	//如果返回错误信息
 	errs, ok := err.(validator.ValidationErrors)
 	if !ok {
-		responses.Fail(c, http.StatusBadRequest, "", err)
+		responses.Fail(c, http.StatusBadRequest, err.Error(), err)
 		return
 	}
 	errMap := removeTopStruct(errs.Translate(Trans))
@@ -77,7 +75,8 @@ func HandleValidatorError(c *gin.Context, err error) {
 		}
 		errstr += k + ":" + v
 	}
-	responses.Fail(c, http.StatusBadRequest, "", errors.New(errstr))
+	responses.Fail(c, http.StatusBadRequest, errstr, errors.New(errstr))
+	return
 }
 
 // removeTopStruct 定义一个去掉结构体名称前缀的自定义方法：

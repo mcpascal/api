@@ -27,7 +27,10 @@ func NewUser() *User {
  */
 func (u *User) Index(c *gin.Context) {
 	req := requests.Paginator{}
-	u.CheckParams(c, &req)
+	if err := c.ShouldBind(&req); err != nil {
+		u.HandleValidatorError(c, err)
+		return
+	}
 	users, err := u.service.Index(&req)
 	if err != nil {
 		responses.Fail(c, 500, "index failed", err)
@@ -48,7 +51,10 @@ func (u *User) Show(c *gin.Context) {
 
 func (u *User) Store(c *gin.Context) {
 	var req requests.User
-	u.CheckParams(c, &req)
+	if err := c.ShouldBind(&req); err != nil {
+		u.HandleValidatorError(c, err)
+		return
+	}
 	user, err := u.service.Store(&req)
 	if err != nil {
 		responses.Fail(c, 500, "store failed", err)
@@ -60,7 +66,10 @@ func (u *User) Store(c *gin.Context) {
 func (u *User) Update(c *gin.Context) {
 	req := requests.User{}
 	id := u.GetParamId(c)
-	u.CheckParams(c, &req)
+	if err := c.ShouldBind(&req); err != nil {
+		u.HandleValidatorError(c, err)
+		return
+	}
 	user, err := u.service.Update(id, &req)
 	if err != nil {
 		responses.Fail(c, 500, "update failed", err)
@@ -76,4 +85,18 @@ func (u *User) Destroy(c *gin.Context) {
 		return
 	}
 	responses.Success(c, "delete success", nil)
+}
+
+func (u *User) Search(c *gin.Context) {
+	req := requests.Search{}
+	if err := c.ShouldBind(&req); err != nil {
+		u.HandleValidatorError(c, err)
+		return
+	}
+	users, err := u.service.Search(&req)
+	if err != nil {
+		responses.Fail(c, 500, "index failed", err)
+		return
+	}
+	responses.Success(c, "index success", users)
 }

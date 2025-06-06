@@ -85,3 +85,23 @@ func (u *User) Destroy(id int) error {
 	}
 	return u.repoisitory.DeleteById(id)
 }
+
+func (u *User) Search(req *requests.Search) (responses.Paginator[responses.User], error) {
+	resp := responses.Paginator[responses.User]{}
+	data := []responses.User{}
+	total, users, err := u.repoisitory.Search(req.Page, req.Size, nil, nil)
+	if err != nil {
+		return resp, err
+	}
+	resp.Total = total
+	for _, user := range users {
+		data = append(data, responses.User{
+			Id:    int64(user.ID),
+			Email: user.Email,
+		})
+	}
+	resp.Data = data
+	resp.Page = req.Page
+	resp.Size = req.Size
+	return resp, nil
+}

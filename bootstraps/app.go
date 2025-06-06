@@ -5,6 +5,7 @@ import (
 	"api/pkg/logger"
 	"api/pkg/mysql"
 	"api/pkg/redis"
+	"api/pkg/validator"
 	"api/routers"
 	"context"
 	"fmt"
@@ -101,6 +102,7 @@ func (app *application) Stop() {
 func (app *application) Setup(env string) {
 	configs.Setup(env)
 	logger.Setup()
+	validator.Setup("zh")
 	mysql.Setup()
 	redis.Setup()
 }
