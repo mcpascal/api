@@ -2,6 +2,7 @@ package bootstraps
 
 import (
 	"api/configs"
+	"api/pkg/cache"
 	"api/pkg/logger"
 	"api/pkg/mysql"
 	"api/pkg/redis"
@@ -21,6 +22,8 @@ import (
 	"github.com/joho/godotenv"
 	"go.uber.org/automaxprocs/maxprocs"
 	"go.uber.org/zap"
+
+	_ "net/http/pprof"
 )
 
 type application struct {
@@ -60,6 +63,12 @@ func NewApp() *application {
 }
 
 func (app *application) Start() {
+	// 开启 pprof 端点，监听在 localhost:6060
+	if app.Env == "development" {
+		go func() {
+			log.Println(http.ListenAndServe("0.0.0.0:6060", nil))
+		}()
+	}
 	// Setup components
 	app.Setup(app.Env)
 
@@ -105,4 +114,5 @@ func (app *application) Setup(env string) {
 	validator.Setup("zh")
 	mysql.Setup()
 	redis.Setup()
+	cache.Setup()
 }

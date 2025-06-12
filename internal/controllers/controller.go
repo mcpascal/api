@@ -13,15 +13,14 @@ import (
 )
 
 type IController interface {
-	// Store(*gin.Context, *requests.IRequest, *services.IService)
-	// Show(*gin.Context, *requests.IRequest, *services.IService)
-	// Update(*gin.Context, *requests.IRequest, *services.IService)
-	// Destroy(*gin.Context, *requests.IRequest, *services.IService)
-	// Index(*gin.Context, *requests.IRequest, *services.IService)
+	Store(*gin.Context)
+	Show(*gin.Context)
+	Update(*gin.Context)
+	Destroy(*gin.Context)
+	Index(*gin.Context)
 }
 
-type Controller struct {
-}
+type Controller struct{}
 
 // HandleValidatorError 处理字段校验异常
 func (c *Controller) HandleValidatorError(ctx *gin.Context, err error) {

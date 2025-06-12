@@ -1,5 +1,13 @@
 package requests
 
+type Id struct {
+	ID int `uri:"id" binding:"required"`
+}
+
+type Name struct {
+	Name string `form:"name" json:"name" binding:"required"`
+}
+
 type Paginator struct {
 	Page int `form:"page,default=1" json:"page,default=1" binding:"required"`
 	Size int `form:"size,default=10" json:"size,default=10" binding:"required"`

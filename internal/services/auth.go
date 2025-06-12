@@ -4,6 +4,7 @@ import (
 	"api/internal/repositories"
 	"api/internal/requests"
 	"api/internal/responses"
+	"api/pkg/cache"
 	"fmt"
 	"time"
 
@@ -102,7 +103,10 @@ func (a *Auth) Register(c *gin.Context, req *requests.Register) (responses.Regis
 
 func (a *Auth) VarifyCaptcha(c *gin.Context, captcha string) error {
 	// 从缓存中获取验证码
-	// key := fmt.Sprintf("captcha:%s", c.ClientIP())
+	key := fmt.Sprintf("captcha:%s", c.ClientIP())
+	if value, ok := cache.Cache.Get(key); ok {
+		fmt.Println(value)
+	}
 	// savedCaptcha, err := cache.Get(key)
 	// if err != nil {
 	// 	return errors.New("验证码已过期")
