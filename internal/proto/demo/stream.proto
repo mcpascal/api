@@ -1,0 +1,6 @@
+service ServicesStream{
+  rpc Search(Req) returns (Res); //传统的 即刻响应的
+  rpc SayHiInStream(stream Req) returns (Res); //入参为流
+  rpc SayHiOutStream(Req) returns (stream Res); //入参为流
+  rpc SayHiIOStream(stream Req) returns (stream Res); //双向流
+}

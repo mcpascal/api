@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package hello;
+option go_package="./hello";
+
+service Greeter {
+  rpc SayHi (SayHiRequest) returns (SayHiReply);
+  rpc Chat (stream ChatRequest) returns (stream ChatReply);
+}
+
+message SayHiRequest {
+  string msg = 1;
+}
+
+message SayHiReply {
+  string msg = 1;
+}
+
+message ChatRequest {
+  string msg = 1;
+}
+
+message ChatReply {
+  string msg = 1;
+}

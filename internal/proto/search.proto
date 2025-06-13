@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package search;
+option go_package="./search";
+
+service Search {
+  rpc Search (SearchRequest) returns (SearchReply) {}
+}
+
+message SearchRequest {
+  int32 page = 1;
+  int32 size = 2;
+
+}
+
+message SearchReply {
+  string page = 1;
+  string size = 2;
+  string total = 3;
+  repeated Data data = 3;
+}
