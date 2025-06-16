@@ -3,19 +3,23 @@ package jwt
 import (
 	"api/configs"
 	"errors"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	v5 "github.com/golang-jwt/jwt/v5"
 )
 
 // CustomClaims 自定义Claims
 type CustomClaims struct {
-	Id uint `json:"id"`
+	Id        uint   `json:"id"`
+	Username  string `json:"username"`
+	TokenType string `json:"token_type"` // access 或 refresh
 	v5.RegisteredClaims
 }
 
 type Jwt struct {
-	Secret []byte
-	Expire int64
+	Secret        []byte
+	Expire        int64
 }
 
 // 定义错误
@@ -30,15 +34,27 @@ var (
 func NewJwt() *Jwt {
 	config := configs.App.JwtInfo
 	return &Jwt{
-		Secret: []byte(config.Secret), // 设置签名密钥
-		Expire: int64(config.Expire),  // 设置过期时间
+		Secret:        []byte(config.Secret), // 设置签名密钥
+		Expire:        int64(config.Expire),  // 设置过期时间
 	}
 }
 
 // CreateToken 生成Token
-func (j *Jwt) Create(claims CustomClaims) (string, error) {
-	token := v5.NewWithClaims(v5.SigningMethodHS256, claims)
-	return token.SignedString(j.Secret)
+func (j *Jwt) Create(claims CustomClaims) (string, string, error) {
+	// token := v5.NewWithClaims(v5.SigningMethodHS256, claims)
+	// return token.SignedString(j.Secret)
+	claims.TokenType = "access"
+	claims.ExpiresAt = v5.NewNumericDate(time.Now().Add(-2 * time.Hour)),
+	accessToken, err = j.CreateToken(claims)
+	if err != nil {
+		return "", "", err
+	}
+
+	// 刷新令牌 - 长期有效
+	claims.TokenType = "refresh"
+	claims.ExpiresAt = j.RefreshExpire
+	refreshToken, err = j.CreateToken(claims)
+	return accessToken, refreshToken, nil
 }
 
 // ParseToken 解析Token
@@ -55,21 +71,21 @@ func (j *Jwt) Parse(tokenString string) (*CustomClaims, error) {
 	}
 }
 
-// // 更新token
-// func (j *Jwt) Refresh(tokenString string) (string, error) {
-// 	v5.TimeFunc = func() time.Time {
-// 		return time.Unix(0, 0)
-// 	}
-// 	token, err := v5.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-// 		return j.Secret, nil
-// 	})
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-// 		v5.TimeFunc = time.Now
-// 		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix()
-// 		return j.Create(*claims)
-// 	}
-// 	return "", TokenInvalid
-// }
+// 更新token
+func (j *Jwt) Refresh(tokenString string) (string, error) {
+	v5.TimeFunc = func() time.Time {
+		return time.Unix(0, 0)
+	}
+	token, err := v5.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return j.Secret, nil
+	})
+	if err != nil {
+		return "", err
+	}
+	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+		v5.TimeFunc = time.Now
+		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix()
+		return j.Create(*claims)
+	}
+	return "", TokenInvalid
+}
