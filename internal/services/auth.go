@@ -5,6 +5,7 @@ import (
 	"api/internal/requests"
 	"api/internal/responses"
 	"api/pkg/cache"
+	"api/pkg/jwt"
 	"fmt"
 	"time"
 
@@ -54,12 +55,17 @@ func (a *Auth) Login(c *gin.Context, req *requests.Login) (*responses.Login, err
 	}
 
 	// generate token
-	// jwt := utils.NewJwt()
-	// return jwt.GenerateToken(utils.CustomClaims{
-	// 	Id:       uint(user.ID),
-	// 	Username: user.Username,
-	// 	Email:    user.Email,
-	// })
+	j := jwt.NewJwt()
+	accessToken, refreshToken, err := j.Create(jwt.CustomClaims{
+		Id:       uint(user.ID),
+		Username: user.Username,
+	})
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(accessToken, refreshToken)
+	resp.AccessToken = accessToken
+	resp.RefreshToken = refreshToken
 	return resp, nil
 }
 
