@@ -35,18 +35,28 @@ func Setup(env string) {
 }
 
 type ConfigInfo struct {
-	Name       string     `mapstructure:"name" json:"name"`
-	Host       string     `mapstructure:"host" json:"host"`
-	Port       int        `mapstructure:"port" json:"port"`
-	MysqlInfo  MysqlInfo  `mapstructure:"mysql" json:"mysql"`
-	RedisInfo  RedisInfo  `mapstructure:"redis" json:"redis"`
-	EtcdInfo   EtcdInfo   `mapstructure:"etcd" json:"etcd"`
-	MongoInfo  MongoInfo  `mapstructure:"mongo" json:"mongo"`
-	LoggerInfo LoggerInfo `mapstructure:"logger" json:"logger"`
-	JwtInfo    JwtInfo    `mapstructure:"jwt" json:"jwt"`
-	JobInfo    JobInfo    `mapstructure:"job" json:"job"`
-	MqInfo     MqInfo     `mapstructure:"mq" json:"mq"`
-	TracerInfo TracerInfo `mapstructure:"tracer" json:"tracer"`
+	Name         string       `mapstructure:"name" json:"name"`
+	Host         string       `mapstructure:"host" json:"host"`
+	Port         int          `mapstructure:"port" json:"port"`
+	DatabaseInfo DatabaseInfo `mapstructure:"database" json:"database"`
+	MysqlInfo    MysqlInfo    `mapstructure:"mysql" json:"mysql"`
+	RedisInfo    RedisInfo    `mapstructure:"redis" json:"redis"`
+	EtcdInfo     EtcdInfo     `mapstructure:"etcd" json:"etcd"`
+	MongoInfo    MongoInfo    `mapstructure:"mongo" json:"mongo"`
+	LoggerInfo   LoggerInfo   `mapstructure:"logger" json:"logger"`
+	JwtInfo      JwtInfo      `mapstructure:"jwt" json:"jwt"`
+	JobInfo      JobInfo      `mapstructure:"job" json:"job"`
+	MqInfo       MqInfo       `mapstructure:"mq" json:"mq"`
+	TracerInfo   TracerInfo   `mapstructure:"tracer" json:"tracer"`
+}
+
+type DatabaseInfo struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	Database string `mapstructure:"database"`
+	Charset  string `mapstructure:"charset"`
 }
 
 type TracerInfo struct {

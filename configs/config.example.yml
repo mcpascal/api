@@ -2,7 +2,13 @@ name: 'youthank'
 host: '127.0.0.1'
 port: 8080
 env: 'dev' # dev, test, prod
-# init_admin_password: 'Adm!n@2)@2'
+database:
+  host: '127.0.0.1'
+  port: 3306
+  username: 'root'
+  password: 'youthank@2025'
+  database: 'youthank'
+  charset: 'utf8'
 mysql:
   username: 'root'
   host: '127.0.0.1'
