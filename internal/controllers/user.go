@@ -40,8 +40,11 @@ func (u *User) Index(c *gin.Context) {
 }
 
 func (u *User) Show(c *gin.Context) {
-	id := u.GetParamId(c)
-	data, err := u.service.Show(id)
+	r := requests.Id{}
+	if err := c.ShouldBind(&r); err != nil {
+		u.HandleValidatorError(c, err)
+	}
+	data, err := u.service.Show(r.Id)
 	if err != nil {
 		responses.Fail(c, 500, "show failed", err)
 		return
@@ -50,12 +53,12 @@ func (u *User) Show(c *gin.Context) {
 }
 
 func (u *User) Store(c *gin.Context) {
-	var req requests.User
-	if err := c.ShouldBind(&req); err != nil {
+	var r requests.User
+	if err := c.ShouldBind(&r); err != nil {
 		u.HandleValidatorError(c, err)
 		return
 	}
-	user, err := u.service.Store(&req)
+	user, err := u.service.Store(&r)
 	if err != nil {
 		responses.Fail(c, 500, "store failed", err)
 		return
@@ -64,13 +67,16 @@ func (u *User) Store(c *gin.Context) {
 }
 
 func (u *User) Update(c *gin.Context) {
-	req := requests.User{}
-	id := u.GetParamId(c)
-	if err := c.ShouldBind(&req); err != nil {
+	id := requests.Id{}
+	if err := c.ShouldBind(&id); err != nil {
+		u.HandleValidatorError(c, err)
+	}
+	r := requests.User{}
+	if err := c.ShouldBind(&r); err != nil {
 		u.HandleValidatorError(c, err)
 		return
 	}
-	user, err := u.service.Update(id, &req)
+	user, err := u.service.Update(id.Id, &r)
 	if err != nil {
 		responses.Fail(c, 500, "update failed", err)
 		return
@@ -79,8 +85,11 @@ func (u *User) Update(c *gin.Context) {
 }
 
 func (u *User) Destroy(c *gin.Context) {
-	id := u.GetParamId(c)
-	if err := u.service.Destroy(id); err != nil {
+	id := requests.Id{}
+	if err := c.ShouldBind(&id); err != nil {
+		u.HandleValidatorError(c, err)
+	}
+	if err := u.service.Destroy(id.Id); err != nil {
 		responses.Fail(c, 500, "delete failed", err)
 		return
 	}
@@ -99,4 +108,18 @@ func (u *User) Search(c *gin.Context) {
 		return
 	}
 	responses.Success(c, "index success", users)
+}
+
+func (u *User) List(c *gin.Context) {
+	req := requests.Search{}
+	if err := c.ShouldBind(&req); err != nil {
+		u.HandleValidatorError(c, err)
+		return
+	}
+	users, err := u.service.Search(&req)
+	if err != nil {
+		responses.Fail(c, 500, "list failed", err)
+		return
+	}
+	responses.Success(c, "list success", users)
 }

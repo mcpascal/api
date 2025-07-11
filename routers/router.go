@@ -140,6 +140,7 @@ func user(r *gin.RouterGroup) {
 		u.POST("/", c.Store)
 		u.PUT("/:id", c.Update)
 		u.DELETE("/:id", c.Destroy)
+		u.POST("/list", c.List)
 		// u.GET("test/:id", WarpH(c.GetUser))
 	}
 }

@@ -1,0 +1,54 @@
+name: 'youthank'
+host: '127.0.0.1'
+port: 8080
+env: 'dev' # dev, test, prod
+
+database:
+  host: '127.0.0.1'
+  port: 3306
+  username: 'root'
+  password: 'youthank@2025'
+  database: 'youthank'
+  charset: 'utf8'
+mysql:
+  username: 'root'
+  host: '127.0.0.1'
+  password: 'youthank@2025'
+  port: 3306
+  database: 'youthank'
+  charset: 'utf8'
+
+redis:
+  host: '127.0.0.1'
+  password: 'youthank@2025'
+  port: 6379
+  database: 0
+
+logger:
+  path: 'logs'
+  file: 'stdout'
+  level: 'info'
+
+etcd:
+  endpoints:
+    -                // 127.0.0.1:2379
+  timeout: 5
+  username: root
+  password:
+
+mongo:
+  host: ''
+  port: '27017'
+  database: ''
+  username: ''
+  password: ''
+
+job:
+  timeout: 600
+
+tracer:
+
+mq:
+
+jwt:
+  secret: ''

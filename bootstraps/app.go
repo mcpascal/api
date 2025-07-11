@@ -112,7 +112,19 @@ func (app *application) Setup(env string) {
 	configs.Setup(env)
 	logger.Setup()
 	validator.Setup("zh")
-	mysql.Setup()
-	redis.Setup()
-	cache.Setup()
+
+	// 根据配置决定是否初始化数据库
+	if configs.App.MysqlInfo.Enable {
+		mysql.Setup()
+	} else {
+		zap.L().Info("MySQL is disabled in configuration")
+	}
+
+	// 根据配置决定是否初始化Redis
+	if configs.App.RedisInfo.Enable {
+		redis.Setup()
+		cache.Setup()
+	} else {
+		zap.L().Info("Redis is disabled in configuration")
+	}
 }

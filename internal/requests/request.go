@@ -1,7 +1,7 @@
 package requests
 
 type Id struct {
-	ID int `uri:"id" binding:"required"`
+	Id int `uri:"id" binding:"required"`
 }
 
 type Name struct {

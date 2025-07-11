@@ -18,6 +18,7 @@ type IController interface {
 	Update(*gin.Context)
 	Destroy(*gin.Context)
 	Index(*gin.Context)
+	List(*gin.Context)
 }
 
 type Controller struct{}
