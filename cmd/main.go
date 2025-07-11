@@ -21,6 +21,18 @@ type AppConfig struct {
 	PprofPort   int
 }
 
+type Application struct {
+}
+
+type Option func(*Application)
+
+func Default() *Application {
+	return &Application{
+		config: DefaultAppConfig(),
+		app:    bootstraps.NewApp(),
+	}
+}
+
 // DefaultAppConfig 返回默认配置
 func DefaultAppConfig() *AppConfig {
 	return &AppConfig{
